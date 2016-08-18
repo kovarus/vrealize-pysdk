@@ -14,7 +14,7 @@ __author__ = 'Russell Pope'
 
 import json
 import requests
-import exceptions
+
 
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning

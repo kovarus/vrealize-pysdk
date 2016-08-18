@@ -11,7 +11,7 @@
 from . import classes
 from .classes import Session
 from .functions import *
-from .exceptions import InvalidToken
+from .vraexceptions import InvalidToken
 
 
 
