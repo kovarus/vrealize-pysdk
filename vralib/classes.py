@@ -62,8 +62,8 @@ class Session(object):
         self.cloudurl = cloudurl
         self.tenant = tenant
         self.token = auth_header
-        self.headers = {'Content-type': 'application/json',
-                        'Accept': 'text/plain',
+        self.headers = {'Content-type': 'Application/json',
+                        'Accept': 'Application/json',
                         'Authorization': self.token}
         self.ssl_verify = ssl_verify
 
@@ -102,8 +102,8 @@ class Session(object):
                     pass
             r = requests.post(
                 url='https://' + cloudurl + '/identity/api/tokens',
-                headers={'Content-type': 'application/json',
-                         'Accept': 'text/plain'},
+                headers={'Content-type': 'Application/json',
+                         'Accept': 'Application/json'},
                 verify=ssl_verify,
                 data=json.dumps({
                     "tenant": tenant,
@@ -233,7 +233,7 @@ class Session(object):
 
         return result
 
-    def update_request_template(self, catalogitem):
+    def update_request_template(self, catalogitem, **kwargs):
         template = self.get_request_template(catalogitem)
         template = json.loads(template)
         template["data"]["kpsc.Role.Linux.WebServer"] = "nginx"
