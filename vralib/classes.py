@@ -233,14 +233,15 @@ class Session(object):
 
         return result
 
-    def update_request_template(self, catalogitem, **kwargs):
-        template = self.get_request_template(catalogitem)
-        template = json.loads(template)
-        template["data"]["kpsc.Role.Linux.WebServer"] = "nginx"
-
-        return template
-
     def get_request_template(self, catalogitem):
+        """
+
+        Retrieve a request template from the API. The template will be stored in a python dictionary where values can
+        be modified as needed.
+
+        :param catalogitem: The UUID of the catalog item to retrieve a template for
+        :return: A python dictionary representation of the JSON return from the API
+        """
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
         return self._request(url)
 
