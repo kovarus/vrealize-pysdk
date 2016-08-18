@@ -1,0 +1,109 @@
+{"@type": "CatalogItemRequest",
+                             "state": "SUBMITTED",
+                             "description": null,
+                             "reasons": null,
+                             "requestedFor": null,
+                             "requestedBy": null,
+                             "requestNumber": 0,
+                             "organization": {
+                                 "tenantRef": "kpsc",
+                                 "subtenantRef": "24b02474-6356-44db-a749-e43ab1c4d420"
+                             },
+                             "requestData": {
+                                 "entries": [
+                                     {
+                                         "key": "provider-blueprintId",
+                                         "value": {
+                                             "type": "string",
+                                             "value": "8367b1ed-cbe9-42b2-b691-7b499d0457fc"
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-provisioningGroupId",
+                                         "value": {
+                                             "type": "string",
+                                             "value": "24b02474-6356-44db-a749-e43ab1c4d420"
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-Cafe.Shim.VirtualMachine.TotalStorageSize",
+                                         "value": {
+                                             "type": "decimal",
+                                             "value": 60.0
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-Cafe.Shim.VirtualMachine.AssignToUser",
+                                         "value": {
+                                             "type": "string",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-VirtualMachine.LeaseDays",
+                                         "value": {
+                                             "type": "integer",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-Cafe.Shim.VirtualMachine.Description",
+                                         "value": {
+                                             "type": "string",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-VirtualMachine.Disk0.IsClone",
+                                         "value": {
+                                             "type": "string",
+                                             "value": "true"
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-Cafe.Shim.VirtualMachine.Reason",
+                                         "value": {
+                                             "type": "string",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-Cafe.Shim.VirtualMachine.NumberOfInstances",
+                                         "value": {
+                                             "type": "integer",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-VirtualMachine.CPU.Count",
+                                         "value": {
+                                             "type": "integer",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-__Notes",
+                                         "value": {
+                                             "type": "string",
+                                             "value": null
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-VirtualMachine.Disk0.Size",
+                                         "value": {
+                                             "type": "string",
+                                             "value": "60"
+                                         }
+                                     },
+                                     {
+                                         "key": "provider-VirtualMachine.Memory.Size",
+                                         "value": {
+                                             "type": "integer",
+                                             "value": null
+                                         }
+                                     }
+                                 ]
+                             },
+                             "catalogItemRef": {
+                                 "id": null
+                             }}
