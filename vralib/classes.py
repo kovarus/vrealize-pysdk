@@ -14,7 +14,7 @@ __author__ = 'Russell Pope'
 
 import json
 import requests
-
+import vraexceptions as vraexcept
 
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -118,7 +118,7 @@ class Session(object):
                 auth_header = 'Bearer ' + vratoken['id']
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
-                raise exceptions.InvalidToken('No bearer token found in response. Response was:',
+                raise vraexcept.InvalidToken('No bearer token found in response. Response was:',
                                               json.dumps(vratoken))
 
         except requests.exceptions.ConnectionError as e:
@@ -128,6 +128,14 @@ class Session(object):
 
         except requests.exceptions.HTTPError as e:
             print e.response.status_code
+
+    @staticmethod
+    def __validate_response(response):
+
+        valid_responses = [200, 201, 203, 204]
+
+        if response.status_code not in valid_responses:
+            raise requests.exceptions.HTTPError
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
         url = url
@@ -142,6 +150,8 @@ class Session(object):
                                  verify=self.ssl_verify,
                                  data=payload)
 
+            self.__validate_response(r)
+
             return r.content
 
         elif request_method == "GET":
@@ -149,6 +159,9 @@ class Session(object):
                                  url=url,
                                  headers=self.headers,
                                  verify=self.ssl_verify)
+
+            self.__validate_response(r)
+
             return json.loads(r.content)
 
     def get_business_groups(self):

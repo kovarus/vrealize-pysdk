@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+.idea
+
+.idea/workspace.xml
+get-catalog.py
+get-items.py
+sandbox.py
