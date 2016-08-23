@@ -388,3 +388,24 @@ class Session(object):
     def get_storage_reservations(self):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
+
+
+class Deployment(object):
+    """
+    Manage existing deployments
+
+    probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
+
+    http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
+
+
+
+    """
+    def __init__(self, id):
+        self.id = id
+
+    @classmethod
+    def get_fromid(cls, id):
+        # Grab a dict with the given deployment in there and use as input
+        deployment = None
+        return cls(deployment)
