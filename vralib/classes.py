@@ -238,9 +238,15 @@ class Session(object):
             catalog = self.get_entitled_catalog_items()
 
         result = []
-        for i in catalog['content']:
-            target = i['catalogItem']['name']
-            if name.lower() in target.lower():
+
+        if name:
+            for i in catalog['content']:
+                target = i['catalogItem']['name']
+                if name.lower() in target.lower():
+                    element = {'name': i['catalogItem']['name'], 'id': i['catalogItem']['id']}
+                    result.append(element)
+        else:
+            for i in catalog['content']:
                 element = {'name': i['catalogItem']['name'], 'id': i['catalogItem']['id']}
                 result.append(element)
 
