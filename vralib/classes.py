@@ -50,7 +50,10 @@ class Session(object):
     def __init__(self, username, cloudurl, tenant, auth_header, ssl_verify):
         """
         Initialization of the Session class.
-        The password is intentionally not stored in this class sine we only really need the token
+        The password is intentionally not stored in this class since we only really need the token.
+        
+        When creating instances of this class you should invoke the Session.login() @classmethod. 
+        Don't invoke Session.__init__() directly. 
 
         :param username: The username is stored here so it can be passed easily into other methods in other classes.
         :param cloudurl: Stores the FQDN of the vRealize Automation server
@@ -89,7 +92,6 @@ class Session(object):
 
 
         """
-        # TODO create better exception handling here for when you pass a bad password
 
         if not tenant:
             tenant = 'vsphere.local'
@@ -126,10 +128,11 @@ class Session(object):
             print 'Exception was ' + str(e)
             exit()
 
-        except requests.exceptions.HTTPError as e:
-            print e.response.status_code
+        except requests.exceptions.HTTPError:
+            raise requests.exceptions.BaseHTTPError('HTTP error. Status code was:', r.status_code)
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
+
         url = url
 
         if request_method == "PUT" or "POST" and payload:
@@ -226,9 +229,6 @@ class Session(object):
         :return: Returns a list of dictionaries that contain the catalog item and ID
         """
 
-        # TODO probably remove the note below
-        # TODO determine what other data may be desired in the return output
-
         if not catalog:
             catalog = self.get_entitled_catalog_items()
 
@@ -323,7 +323,7 @@ class Session(object):
         :return:
         """
         # TODO create a handler for the different API verbs this thing needs to support
-        # TODO this requeste will need some pagination support
+        # TODO this request will need some pagination support
 
         url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
         return self._request(url)
@@ -369,7 +369,7 @@ class Session(object):
 
         :return:
         """
-        # TODO add pagination support
+
         # TODO update metadata field appropriately
 
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources'
@@ -390,6 +390,11 @@ class Session(object):
     def get_storage_reservations(self):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
+
+class CatalogItem(object):
+    pass
+
+
 
 
 class Deployment(object):
