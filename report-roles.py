@@ -15,7 +15,7 @@ __version__ = "$Revision$"
 
 import getpass
 import argparse
-import vralib as vra
+import vralib
 import csv
 
 
@@ -45,70 +45,68 @@ def getargs():
     return args
 
 def main():
-    try:
-        args = getargs()
-        cloudurl = args.server
-        username = args.username
-        tenant = args.tenant
-        outfile = args.csv
+
+    args = getargs()
+    cloudurl = args.server
+    username = args.username
+    tenant = args.tenant
+    outfile = args.csv
 
 
-        if not username:
-            username = raw_input("vRA Username (user@domain):")
-        else:
-            pass
+    if not username:
+        username = raw_input("vRA Username (user@domain):")
+    else:
+        pass
 
-        password = getpass.getpass("vRA Password:")
+    password = getpass.getpass("vRA Password:")
 
-        token = vra.get_token(username, password, cloudurl, tenant)
+    vra = vralib.Session.login(username, password, cloudurl, tenant, ssl_verify=False)
 
-        subtenant = 'f41a35f5-040e-42e0-a5c2-6ca4e7bf328b'
-        subtenantroles = vra.get_subtenant_roles(token, cloudurl, tenant, subtenant)
+    subtenant = 'f41a35f5-040e-42e0-a5c2-6ca4e7bf328b'
+    subtenantroles = vra.get_subtenant_roles(token, cloudurl, tenant, subtenant)
 
-        with open(outfile, "w") as f:
-            csv_file = csv.writer(f)
-            csv_file.writerow(['user', 'domain', 'type', 'id', 'role', 'scope'])
-            for i,val in enumerate(subtenantroles['content']):
-                if val['name'] == 'Basic User':
-                    scoperole = val['scopeRoleRef']
-                    attype = val['@type']
-                    role_name = val['name']
-                    role_id = val['id']
-                    for user in val['principalId']:
-                        csv_file.writerow([user['name'],
-                                           user['domain'],
-                                           attype,
-                                           role_id,
-                                           role_name,
-                                           scoperole])
-                elif val['name'] == 'Business Group Manager':
-                    scoperole = val['scopeRoleRef']
-                    attype = val['@type']
-                    role_name = val['name']
-                    role_id = val['id']
-                    for user in val['principalId']:
-                        csv_file.writerow([user['name'],
-                                           user['domain'],
-                                           attype,
-                                           role_id,
-                                           role_name,
-                                           scoperole])
-                elif val['name'] == 'Support User':
-                    scoperole = val['scopeRoleRef']
-                    attype = val['@type']
-                    role_name = val['name']
-                    role_id = val['id']
-                    for user in val['principalId']:
-                        csv_file.writerow([user['name'],
-                                           user['domain'],
-                                           attype,
-                                           role_id,
-                                           role_name,
-                                           scoperole])
+    with open(outfile, "w") as f:
+        csv_file = csv.writer(f)
+        csv_file.writerow(['user', 'domain', 'type', 'id', 'role', 'scope'])
+        for i,val in enumerate(subtenantroles['content']):
+            if val['name'] == 'Basic User':
+                scoperole = val['scopeRoleRef']
+                attype = val['@type']
+                role_name = val['name']
+                role_id = val['id']
+                for user in val['principalId']:
+                    csv_file.writerow([user['name'],
+                                       user['domain'],
+                                       attype,
+                                       role_id,
+                                       role_name,
+                                       scoperole])
+            elif val['name'] == 'Business Group Manager':
+                scoperole = val['scopeRoleRef']
+                attype = val['@type']
+                role_name = val['name']
+                role_id = val['id']
+                for user in val['principalId']:
+                    csv_file.writerow([user['name'],
+                                       user['domain'],
+                                       attype,
+                                       role_id,
+                                       role_name,
+                                       scoperole])
+            elif val['name'] == 'Support User':
+                scoperole = val['scopeRoleRef']
+                attype = val['@type']
+                role_name = val['name']
+                role_id = val['id']
+                for user in val['principalId']:
+                    csv_file.writerow([user['name'],
+                                       user['domain'],
+                                       attype,
+                                       role_id,
+                                       role_name,
+                                       scoperole])
 
-    except Exception as e:
-        print("things have broken")
-        print(e)
+
 
 if __name__ == '__main__':
     main()

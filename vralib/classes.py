@@ -129,14 +129,6 @@ class Session(object):
         except requests.exceptions.HTTPError as e:
             print e.response.status_code
 
-    @staticmethod
-    def __validate_response(response):
-
-        valid_responses = [200, 201, 203, 204]
-
-        if response.status_code not in valid_responses:
-            raise requests.exceptions.HTTPError
-
     def _request(self, url, request_method='GET', payload=None, **kwargs):
         url = url
 
@@ -150,7 +142,8 @@ class Session(object):
                                  verify=self.ssl_verify,
                                  data=payload)
 
-            self.__validate_response(r)
+            if not r.ok:
+                raise requests.exceptions.BaseHTTPError('HTTP error. Status code was:', r.status_code)
 
             return r.content
 
@@ -160,7 +153,8 @@ class Session(object):
                                  headers=self.headers,
                                  verify=self.ssl_verify)
 
-            self.__validate_response(r)
+            if not r.ok:
+                raise requests.exceptions.BaseHTTPError('HTTP error. Status code was:', r.status_code)
 
             return json.loads(r.content)
 
@@ -186,6 +180,7 @@ class Session(object):
         """
         # TODO update the output dict's page number to reflect a list of page numbers iterated through
         # TODO add exception handling for when you're not actually entitled to anything.
+        # TODO probably need to deprecate this function
 
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems'
 
@@ -328,6 +323,7 @@ class Session(object):
         :return:
         """
         # TODO create a handler for the different API verbs this thing needs to support
+        # TODO this requeste will need some pagination support
 
         url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
         return self._request(url)
@@ -336,7 +332,7 @@ class Session(object):
         """
         gets a list of all request unless an id is specified. In that case it will only return the request specified.
 
-        param id:
+        param id: 
         :return:
         """
 
