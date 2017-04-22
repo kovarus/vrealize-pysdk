@@ -53,7 +53,7 @@ class Session(object):
         The password is intentionally not stored in this class since we only really need the token.
         
         When creating instances of this class you should invoke the Session.login() @classmethod. 
-        Don't invoke Session.__init__() directly. 
+        If you invoke Session.__init__() directly you'll need to know what your bearer token is ahead of time.  
 
         :param username: The username is stored here so it can be passed easily into other methods in other classes.
         :param cloudurl: Stores the FQDN of the vRealize Automation server
