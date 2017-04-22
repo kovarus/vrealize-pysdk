@@ -89,12 +89,12 @@ class Session(object):
         :param ssl_verify: Enable or disable SSL verification.
         :return: Returns a class that includes all of the login session data (token, tenant and SSL verification)
 
-
-
         """
 
         if not tenant:
             tenant = 'vsphere.local'
+
+        r = None
 
         try:
             if not ssl_verify:
@@ -129,10 +129,25 @@ class Session(object):
             exit()
 
         except requests.exceptions.HTTPError:
-            raise requests.exceptions.BaseHTTPError('HTTP error. Status code was:', r.status_code)
+            raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
-
+        """
+        
+        Generic requestor method for all of the HTTP methods. This gets invoked by pretty much everything in the API.
+        You can also use it to do anything not yet implemented in the API. For example:
+        (assuming an instance of this class called vra)
+      
+        out = vra._request(url="https://vra.kpsc.io/properties-service/api/propertygroups")
+        print json.dumps(out, indent=4)
+        
+        :param url: The complete URL for the requested resource
+        :param request_method: An HTTP method that is either PUT, POST or GET
+        :param payload: Used to store a resource that is used in either POST or PUT operations
+        :param kwargs: Unused currently
+        :return: A python dictionary containing the response JSON
+        
+        """
         url = url
 
         if request_method == "PUT" or "POST" and payload:
@@ -146,7 +161,7 @@ class Session(object):
                                  data=payload)
 
             if not r.ok:
-                raise requests.exceptions.BaseHTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
             return r.content
 
@@ -157,7 +172,7 @@ class Session(object):
                                  verify=self.ssl_verify)
 
             if not r.ok:
-                raise requests.exceptions.BaseHTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
             return json.loads(r.content)
 
