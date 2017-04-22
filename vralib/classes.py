@@ -14,7 +14,7 @@ __author__ = 'Russell Pope'
 
 import json
 import requests
-
+import vraexceptions as vraexcept
 
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -50,7 +50,10 @@ class Session(object):
     def __init__(self, username, cloudurl, tenant, auth_header, ssl_verify):
         """
         Initialization of the Session class.
-        The password is intentionally not stored in this class sine we only really need the token
+        The password is intentionally not stored in this class since we only really need the token.
+        
+        When creating instances of this class you should invoke the Session.login() @classmethod. 
+        If you invoke Session.__init__() directly you'll need to know what your bearer token is ahead of time.  
 
         :param username: The username is stored here so it can be passed easily into other methods in other classes.
         :param cloudurl: Stores the FQDN of the vRealize Automation server
@@ -86,13 +89,12 @@ class Session(object):
         :param ssl_verify: Enable or disable SSL verification.
         :return: Returns a class that includes all of the login session data (token, tenant and SSL verification)
 
-
-
         """
-        # TODO create better exception handling here for when you pass a bad password
 
         if not tenant:
             tenant = 'vsphere.local'
+
+        r = None
 
         try:
             if not ssl_verify:
@@ -118,7 +120,7 @@ class Session(object):
                 auth_header = 'Bearer ' + vratoken['id']
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
-                raise exceptions.InvalidToken('No bearer token found in response. Response was:',
+                raise vraexcept.InvalidToken('No bearer token found in response. Response was:',
                                               json.dumps(vratoken))
 
         except requests.exceptions.ConnectionError as e:
@@ -126,10 +128,26 @@ class Session(object):
             print 'Exception was ' + str(e)
             exit()
 
-        except requests.exceptions.HTTPError as e:
-            print e.response.status_code
+        except requests.exceptions.HTTPError:
+            raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
+        """
+        
+        Generic requestor method for all of the HTTP methods. This gets invoked by pretty much everything in the API.
+        You can also use it to do anything not yet implemented in the API. For example:
+        (assuming an instance of this class called vra)
+      
+        out = vra._request(url="https://vra.kpsc.io/properties-service/api/propertygroups")
+        print json.dumps(out, indent=4)
+        
+        :param url: The complete URL for the requested resource
+        :param request_method: An HTTP method that is either PUT, POST or GET
+        :param payload: Used to store a resource that is used in either POST or PUT operations
+        :param kwargs: Unused currently
+        :return: A python dictionary containing the response JSON
+        
+        """
         url = url
 
         if request_method == "PUT" or "POST" and payload:
@@ -142,6 +160,9 @@ class Session(object):
                                  verify=self.ssl_verify,
                                  data=payload)
 
+            if not r.ok:
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+
             return r.content
 
         elif request_method == "GET":
@@ -149,6 +170,10 @@ class Session(object):
                                  url=url,
                                  headers=self.headers,
                                  verify=self.ssl_verify)
+
+            if not r.ok:
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+
             return json.loads(r.content)
 
     def get_business_groups(self):
@@ -173,6 +198,7 @@ class Session(object):
         """
         # TODO update the output dict's page number to reflect a list of page numbers iterated through
         # TODO add exception handling for when you're not actually entitled to anything.
+        # TODO probably need to deprecate this function
 
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems'
 
@@ -218,16 +244,19 @@ class Session(object):
         :return: Returns a list of dictionaries that contain the catalog item and ID
         """
 
-        # TODO probably remove the note below
-        # TODO determine what other data may be desired in the return output
-
         if not catalog:
             catalog = self.get_entitled_catalog_items()
 
         result = []
-        for i in catalog['content']:
-            target = i['catalogItem']['name']
-            if name.lower() in target.lower():
+
+        if name:
+            for i in catalog['content']:
+                target = i['catalogItem']['name']
+                if name.lower() in target.lower():
+                    element = {'name': i['catalogItem']['name'], 'id': i['catalogItem']['id']}
+                    result.append(element)
+        else:
+            for i in catalog['content']:
                 element = {'name': i['catalogItem']['name'], 'id': i['catalogItem']['id']}
                 result.append(element)
 
@@ -309,6 +338,7 @@ class Session(object):
         :return:
         """
         # TODO create a handler for the different API verbs this thing needs to support
+        # TODO this request will need some pagination support
 
         url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
         return self._request(url)
@@ -317,7 +347,7 @@ class Session(object):
         """
         gets a list of all request unless an id is specified. In that case it will only return the request specified.
 
-        param id:
+        param id: 
         :return:
         """
 
@@ -354,7 +384,7 @@ class Session(object):
 
         :return:
         """
-        # TODO add pagination support
+
         # TODO update metadata field appropriately
 
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources'
@@ -375,3 +405,29 @@ class Session(object):
     def get_storage_reservations(self):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
+
+class CatalogItem(object):
+    pass
+
+
+
+
+class Deployment(object):
+    """
+    Manage existing deployments
+
+    probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
+
+    http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
+
+
+
+    """
+    def __init__(self, id):
+        self.id = id
+
+    @classmethod
+    def get_fromid(cls, id):
+        # Grab a dict with the given deployment in there and use as input
+        deployment = None
+        return cls(deployment)

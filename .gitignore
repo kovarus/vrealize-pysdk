@@ -87,3 +87,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+.idea
+
+.idea/workspace.xml
+sandbox.py
