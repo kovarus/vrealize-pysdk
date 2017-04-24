@@ -419,7 +419,8 @@ class Deployment(object):
     probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
 
     http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
-
+    
+    ..
 
 
     """
