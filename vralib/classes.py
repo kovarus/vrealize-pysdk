@@ -163,7 +163,7 @@ class Session(object):
             if not r.ok:
                 raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
-            return r.content
+            return json.loads(r.content)
 
         elif request_method == "GET":
             r = requests.request(request_method,
