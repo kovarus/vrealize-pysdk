@@ -420,7 +420,7 @@ class Deployment(object):
 
     http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
     
-    ..
+    ....
 
 
     """
