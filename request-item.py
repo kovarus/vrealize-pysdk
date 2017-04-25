@@ -32,6 +32,14 @@ def getargs():
                         required=True,
                         action='store',
                         help='The partial or full name of the catalog item you want the ID for')
+    parser.add_argument('-r', '--reasons',
+                        required=True,
+                        action='store',
+                        help='The reason for the requested item. Enclose in quotes.')
+    parser.add_argument('-d', '--description',
+                        required=False,
+                        action='store',
+                        help='An optional description for the requested resource. Enclose in quotes.')
     args = parser.parse_args()
     return args
 
@@ -49,6 +57,10 @@ def main():
 
     request_template = vra.get_request_template(catalogitem=args.catalogitem)
 
+    request_template['description'] = args.description
+    request_template['reasons'] = args.reasons
+
+    #TODO add some logic to query for options here.
     request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = "role::linux_mysql_database"
 
     build_vm = vra.request_item(catalogitem=args.catalogitem,
