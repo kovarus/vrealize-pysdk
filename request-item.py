@@ -2,7 +2,7 @@
 
 """
 
-    vRA Request Tool
+    vRA Request Tool. A tool I use to build VMs for the purposes of running some tests. 
 
 """
 
@@ -12,7 +12,7 @@ import getpass
 import argparse
 import vralib
 import json
-
+import time
 
 def getargs():
     parser = argparse.ArgumentParser()
@@ -60,13 +60,25 @@ def main():
     request_template['description'] = args.description
     request_template['reasons'] = args.reasons
 
-    #TODO add some logic to query for options here.
+    # TODO add some logic to query for options here.
+    # TODO should be noted that this only changes one custom property. Need to design some logic to extend this
     request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = "role::linux_mysql_database"
 
     build_vm = vra.request_item(catalogitem=args.catalogitem,
                                 payload=request_template)
 
-    print(json.dumps(build_vm, indent=4))
+    request_id = build_vm['id']
+    provisioned_state = vra.get_requests(id=request_id)
+
+    while 'SUCCESSFUL' not in provisioned_state['state'] and 'PROVIDER_FAILED' not in provisioned_state['state']:
+        time.sleep(5)
+        provisioned_state = vra.get_requests(id=request_id)
+        print provisioned_state['state']
+        print('Current provisioning state is:', provisioned_state['stateName'],
+              'Current phase is:', provisioned_state['phase'])
+        if provisioned_state['state'] == 'FAILED' or provisioned_state['state'] == 'PROVIDER_FAILED':
+            raise Exception('Request provider failed! Dumping JSON output of request',
+                            json.dumps(provisioned_state, indent=4))
 
 if __name__ == '__main__':
     main()
