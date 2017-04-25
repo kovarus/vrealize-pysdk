@@ -70,15 +70,17 @@ def main():
     request_id = build_vm['id']
     provisioned_state = vra.get_requests(id=request_id)
 
-    while 'SUCCESSFUL' not in provisioned_state['state'] and 'PROVIDER_FAILED' not in provisioned_state['state']:
-        time.sleep(5)
+    while 'SUCCESSFUL' not in provisioned_state['state']:
         provisioned_state = vra.get_requests(id=request_id)
-        print provisioned_state['state']
         print('Current provisioning state is:', provisioned_state['stateName'],
               'Current phase is:', provisioned_state['phase'])
-        if provisioned_state['state'] == 'FAILED' or provisioned_state['state'] == 'PROVIDER_FAILED':
+        if provisioned_state['state'] == 'PROVIDER_FAILED':
             raise Exception('Request provider failed! Dumping JSON output of request',
                             json.dumps(provisioned_state, indent=4))
+        if provisioned_state['state'] == 'FAILED':
+            raise Exception('Failed inside of vRA! Dumping JSON output of request',
+                            json.dumps(provisioned_state, indent=4))
+        time.sleep(5)
 
 if __name__ == '__main__':
     main()

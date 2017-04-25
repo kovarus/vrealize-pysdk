@@ -402,12 +402,57 @@ class Session(object):
 
         return result
 
+    def get_consumer_resource(self, id):
+        # TODO this should probably form part of the basis for an instance of a class
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + id
+        return self._request(url)
+
+    def get_consumer_resource_details(self,id):
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + id + '/form'
+        return self._request(url)
+
+    def get_consumer_resource_operations(self):
+        """
+        
+        Used to get a list of day 2 operations
+        
+        :return: 
+        """
+
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resourceOperations/'
+        return self._request(url)
+
     def get_storage_reservations(self):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
 
 class CatalogItem(object):
     pass
+
+class Resource(object):
+    """
+    
+    Representation of a provisioned resource inside of vRealize Automation
+    
+    """
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def from_id(cls, session, id=None):
+        resource = session.get_consumer_resource(id)
+        operations = []
+        status = None
+        description = None
+        owners = []
+        name = None
+        resources = [{}] # WIll have multiple VMs Memory, CPU, disks, PG, MAC, IP, moref should be a dict
+        organization = None
+        tenant = None
+        business_group = None
+
+
 
 
 
