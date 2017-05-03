@@ -7,6 +7,7 @@
 
 """
 # TODO implement logging
+# TODO docstrings are formatted backwards; refer to requests library docstrings
 
 
 __author__ = 'Russell Pope'
@@ -49,17 +50,18 @@ class Session(object):
 
     def __init__(self, username, cloudurl, tenant, auth_header, ssl_verify):
         """
-        Initialization of the Session class.
-        The password is intentionally not stored in this class since we only really need the token.
-        
-        When creating instances of this class you should invoke the Session.login() @classmethod. 
-        If you invoke Session.__init__() directly you'll need to know what your bearer token is ahead of time.  
-
         :param username: The username is stored here so it can be passed easily into other methods in other classes.
         :param cloudurl: Stores the FQDN of the vRealize Automation server
         :param tenant: Stores the tenant to log into. If left blank it will default to vsphere.local
         :param auth_header: Stores the actual Bearer token to be used in subsequent requests.
         :return:
+        
+        Initialization of the Session class.
+        The password is intentionally not stored in this class since we only really need the token.
+        
+        When creating instances of this class you should invoke the Session.login() @classmethod. 
+        If you invoke Session.__init__() directly you'll need to know what your bearer token is ahead of time.  
+        
         """
         self.username = username
         self.cloudurl = cloudurl
@@ -133,19 +135,19 @@ class Session(object):
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
         """
+               
+        :param url: The complete URL for the requested resource
+        :param request_method: An HTTP method that is either PUT, POST or GET
+        :param payload: Used to store a resource that is used in either POST or PUT operations
+        :param kwargs: Unused currently
+        :return: A python dictionary containing the response JSON
         
         Generic requestor method for all of the HTTP methods. This gets invoked by pretty much everything in the API.
         You can also use it to do anything not yet implemented in the API. For example:
         (assuming an instance of this class called vra)
       
         out = vra._request(url="https://vra.kpsc.io/properties-service/api/propertygroups")
-        print json.dumps(out, indent=4)
-        
-        :param url: The complete URL for the requested resource
-        :param request_method: An HTTP method that is either PUT, POST or GET
-        :param payload: Used to store a resource that is used in either POST or PUT operations
-        :param kwargs: Unused currently
-        :return: A python dictionary containing the response JSON
+        print(json.dumps(out, indent=4))
         
         """
         url = url
@@ -219,7 +221,11 @@ class Session(object):
 
     def get_catalogitem_byname(self, name, catalog=False):
         """
-
+        :param name: A required string that will be used to filter the return to items that contain the string.
+        :param catalog: An optional dictionary of all of the catalog items available to the user.
+        :return: Returns a list of dictionaries that contain the catalog item and ID
+        
+        
         Loop through catalog items until you find the one with the specified name. This method allows you to "filter"
         returned catalog items via a partial match.
 
@@ -238,10 +244,6 @@ class Session(object):
         vra = vralib.Session.login(username, password, cloudurl, tenant, ssl_verify=False)
 
         catalog_offerings = vra.get_catalogitem_byname(name='cent', vra.get_get_entitledcatalogitems())
-
-        :param name: A required string that will be used to filter the return to items that contain the string.
-        :param catalog: An optional dictionary of all of the catalog items available to the user.
-        :return: Returns a list of dictionaries that contain the catalog item and ID
         """
 
         if not catalog:
@@ -264,18 +266,20 @@ class Session(object):
 
     def get_request_template(self, catalogitem):
         """
-
-        Retrieve a request template from the API. The template will be stored in a python dictionary where values can
-        be modified as needed.
-
         :param catalogitem: The UUID of the catalog item to retrieve a template for
         :return: A python dictionary representation of the JSON return from the API
+        
+        Retrieve a request template from the API. The template will be stored in a python dictionary where values can
+        be modified as needed.
         """
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
         return self._request(url)
 
     def request_item(self, catalogitem, payload=False):
         """
+        :param catalogitem: A string that includes the unique ID of the catalog item to be provisioned
+        :param payload: An optional parameter that should be a dictionary of the catalog request template which can be retrieved via the self.get_request_template method()
+        :return: A python dictionary that includes the output from POST operation.
 
         Allows you to request an item from the vRealize catalog.
 
@@ -298,10 +302,6 @@ class Session(object):
         build = vra.request_item('0ebbcf20-abdf-4663-a40c-1e50e7340190', payload)
 
         See the docstring for the self.get_request_template() method for additional information
-
-        :param catalogitem: A string that includes the unique ID of the catalog item to be provisioned
-        :param payload: An optional parameter that should be a dictionary of the catalog request template which can be retrieved via the self.get_request_template method()
-        :return: A python dictionary that includes the output from POST operation.
 
         """
 
@@ -411,6 +411,24 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + id + '/form'
         return self._request(url)
 
+    # TODO add a pagination function since I'll need it more frequently.
+
+    def get_consumer_resource_actions(self):
+        url = 'https://' + self.cloudurl + '/catalog-service/api/provider/resourceActions'
+        result = self._request(url)
+
+        if result['metadata']['totalPages'] != 1:
+            page = 2  # starting on 2 since we've already got page 1's data
+            while page <= result['metadata']['totalPages']:
+                url = 'https://' + self.cloudurl + '/catalog-service/api/provider/resourceActions?page=%s' % page
+                next_page = self._request(url)
+                for i in next_page['content']:
+                    result['content'].append(i)
+                page += 1
+            return result
+        return result
+
+
     def get_consumer_resource_operations(self):
         """
         
@@ -439,7 +457,7 @@ class Resource(object):
     def __init__(self):
         pass
 
-    @staticmethod
+    @classmethod
     def from_id(cls, session, id=None):
         resource = session.get_consumer_resource(id)
         operations = []
@@ -451,10 +469,26 @@ class Resource(object):
         organization = None
         tenant = None
         business_group = None
+        custom_properties = {}
+        children =[]
 
+        return cls(resource)
 
-
-
+    @staticmethod
+    def _get_operations(session):
+        # {
+        #     "extensionId": null,
+        #     "name": "Change Lease",
+        #     "iconId": "machineChangeLease.png",
+        #     "hasForm": true,
+        #     "bindingId": "Infrastructure.Machine.Action.ChangeLease",
+        #     "formScale": "SMALL",
+        #     "type": "ACTION",
+        #     "id": "0844ff2b-9d39-45ab-af11-376bd0fc64b7",
+        #     "providerTypeId": "com.vmware.csp.iaas.blueprint.service",
+        #     "description": "Change the lease for a machine. Leave empty for indefinite."
+        # }
+        pass
 
 
 class Deployment(object):
