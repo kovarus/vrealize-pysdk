@@ -75,6 +75,13 @@ class Session(object):
     @classmethod
     def login(cls, username, password, cloudurl, tenant=None, ssl_verify=True):
         """
+        :param username: A username@domain with sufficient rights to use the API
+        :param password: The password of the user
+        :param cloudurl: The vRealize automation server. Should be the FQDN.
+        :param tenant: the tenant ID to be logged into. If left empty it will default to vsphere.local
+        :param ssl_verify: Enable or disable SSL verification.
+        :return: Returns a class that includes all of the login session data (token, tenant and SSL verification)
+        
         Takes in a username, password, URL, and tenant to access a vRealize Automation server AP. These attributes
         can be used to send or retrieve data from the vRealize automation API.
 
@@ -84,12 +91,7 @@ class Session(object):
 
         This creates a Session object called 'vra' which can now be used to access all of the methods in this class.
 
-        :param username: A username@domain with sufficient rights to use the API
-        :param password: The password of the user
-        :param cloudurl: The vRealize automation server. Should be the FQDN.
-        :param tenant: the tenant ID to be logged into. If left empty it will default to vsphere.local
-        :param ssl_verify: Enable or disable SSL verification.
-        :return: Returns a class that includes all of the login session data (token, tenant and SSL verification)
+
 
         """
 
@@ -134,8 +136,7 @@ class Session(object):
             raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
-        """
-               
+        """          
         :param url: The complete URL for the requested resource
         :param request_method: An HTTP method that is either PUT, POST or GET
         :param payload: Used to store a resource that is used in either POST or PUT operations
