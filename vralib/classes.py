@@ -181,11 +181,9 @@ class Session(object):
 
     def get_business_groups(self):
         """
-
-        Will retrieve a list of all vRA business groups for the currently logged in tenant
-
         :return: python dictionary with the JSON response contents.
 
+        Will retrieve a list of all vRA business groups for the currently logged in tenant
         """
 
         url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants'
