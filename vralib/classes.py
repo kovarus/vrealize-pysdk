@@ -443,10 +443,11 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
 
+
 class CatalogItem(object):
     pass
 
-class Resource(object):
+class Deployment(object):
     """
     
     Representation of a provisioned resource inside of vRealize Automation
@@ -470,6 +471,10 @@ class Resource(object):
         business_group = None
         custom_properties = {}
         children =[]
+        # TODO write some logic to drill into this to collect child objects
+        session._request(url='https://vra.kpsc.io/catalog-service/api/consumer/resourceViews/7f17925f-342f-43fc-8b25-a6960af4ddb5')
+        # LOL why does this have to be difficult?
+        url='https://vra.kpsc.io/catalog-service/api/consumer/resources/7f17925f-342f-43fc-8b25-a6960af4ddb5/actions/724dde0c-a9f9-443e-85a3-5f90ef097f51/requests/template'
 
         return cls(resource)
 
@@ -489,24 +494,3 @@ class Resource(object):
         # }
         pass
 
-
-class Deployment(object):
-    """
-    Manage existing deployments
-
-    probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
-
-    http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
-    
-    .......
-
-
-    """
-    def __init__(self, id):
-        self.id = id
-
-    @classmethod
-    def get_fromid(cls, id):
-        # Grab a dict with the given deployment in there and use as input
-        deployment = None
-        return cls(deployment)
