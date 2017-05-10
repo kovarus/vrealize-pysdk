@@ -179,6 +179,20 @@ class Session(object):
 
             return json.loads(r.content)
 
+    def paginated_return(self, api):
+        url = 'https://' + self.cloudurl + api
+        result = self._request(url)
+        
+        page = 2  # starting on 2 since we've already got page 1's data
+        while page <= result['metadata']['totalPages']:
+            url = 'https://' + self.cloudurl + api + '?page=%s' % page
+            next_page = self._request(url)
+            for i in next_page['content']:
+                result['content'].append(i)
+            page += 1
+                
+        return result
+			
     def get_business_groups(self):
         """
         :return: python dictionary with the JSON response contents.
@@ -442,6 +456,55 @@ class Session(object):
     def get_storage_reservations(self):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
+		
+    def get_blueprint_by_id(self, id):
+        url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'  + id
+        return self._request(url)
+        
+    def get_blueprint_by_name(self, name):
+        """
+        Dumps all the blueprints then searches for the correct name. Update this to search each page before continuing later.
+        """
+        api_get_all_bps = '/composition-service/api/blueprintdocuments/'
+        result = self.paginated_return(api_get_all_bps)
+        
+        
+        for blueprint in result['content']:
+            if blueprint['name'] == name:
+                url_bp_id = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'  + blueprint['id']
+                return self._request(url_bp_id)
+    
+    def delete_blueprint(self, id):
+        """
+        Use the get_blueprint_by_name function to get the ID of the blueprint you want to delete if you don't already know the ID.
+        
+        Example:
+        
+        blueprint_data = get_blueprint_by_name("example_name")
+        delete_blueprint(blueprint_data['content']['id'])
+        """
+        url = 'https://' + self.cloudurl + '/composition-service/api/blueprints/' + id
+        return self._request(url, request_method='DELETE')
+        
+    def update_blueprint(self, bp_json, bp_id):
+        """
+        Creates/updates a bluperint based on a JSON doc. Best to use one of thet two "get blueprint" functions to dump a properly formatted JSON doc and either manually or programmatically update
+        the doc based on what you need to change. The following example would update the source VM for all the VMs using a clone workflow.
+        
+        url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'  + bp_id
+        bp_json = self._request(url)
+    
+        for vsphere_machine in bp_json['components']:
+            if vsphere_machine['type'] == "Infrastructure.CatalogItem.Machine.Virtual.vSphere" and vsphere_machine['data']['provisioning_workflow']['fixed']['id'] == "CloneWorkflow":
+                bp_json['components'][vsphere_machine]['data']['source_machine_name']['fixed'] = source_name
+                bp_json['components'][vsphere_machine]['data']['storage']['max'] = store_max
+                bp_json['components'][vsphere_machine].pop(source_machine, None)
+                
+        result = update_blueprint(bp_json, bp_json['id'])
+        """
+        
+        url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/' + bp_id
+        return self._request(url, request_method='PUT', payload=bp_json)
 
 
 class CatalogItem(object):
