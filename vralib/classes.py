@@ -179,18 +179,18 @@ class Session(object):
 
             return json.loads(r.content)
 
-    def _paginated_return(self, uri):
+    def _paginated_return(self, url):
         """
         :param uri: 
         :return: 
         
         """
-        url = 'https://' + self.cloudurl + uri
+        # url = 'https://' + self.cloudurl + uri
         result = self._request(url)
         
         page = 2  # starting on 2 since we've already got page 1's data
         while page <= result['metadata']['totalPages']:
-            url = 'https://' + self.cloudurl + uri + '?page=%s' % page
+            url = url + '?page=%s' % page
             next_page = self._request(url)
             for i in next_page['content']:
                 result['content'].append(i)
@@ -452,9 +452,11 @@ class Session(object):
         
         Using to try to figure out the resource types available to see if there is more information about them.
         
+        GET /api/resourceTypes
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/provider/resourceTypes/'
-        return self._request(url)
+        url = 'https://' + self.cloudurl + '/catalog-service/api/resourceTypes/'
+        # return self._request(url)
+        return self._paginated_return(url)
 
     def get_consumer_resource_operations(self):
         """
