@@ -181,8 +181,10 @@ class Session(object):
 
     def _paginated_return(self, url):
         """
-        :param uri: 
-        :return: 
+        :param url: A string containing the URL of the resource you want to access
+        :return: A python dictionary including all of the pages of output.
+        
+        This method is invoked instead of the _request() method when you expect multiple pages of output
         
         """
         # url = 'https://' + self.cloudurl + uri
@@ -454,8 +456,10 @@ class Session(object):
         
         GET /api/resourceTypes
         """
+        # LOL This is inconsistent with other areas of the API.
+        # LOL I expected to hit this: GET /api/provider/resourceTypes and get the output
+        # LOL instead I have to go to this: GET /api/resourceTypes/
         url = 'https://' + self.cloudurl + '/catalog-service/api/resourceTypes/'
-        # return self._request(url)
         return self._paginated_return(url)
 
     def get_consumer_resource_operations(self):
