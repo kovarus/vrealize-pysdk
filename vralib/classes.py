@@ -164,7 +164,7 @@ class Session(object):
                                  data=payload)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code, 'for URL:', r.url)
 
             return json.loads(r.content)
 
@@ -175,17 +175,22 @@ class Session(object):
                                  verify=self.ssl_verify)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code, 'for URL:', r.url)
 
             return json.loads(r.content)
 
-    def paginated_return(self, api):
-        url = 'https://' + self.cloudurl + api
+    def _paginated_return(self, uri):
+        """
+        :param uri: 
+        :return: 
+        
+        """
+        url = 'https://' + self.cloudurl + uri
         result = self._request(url)
         
         page = 2  # starting on 2 since we've already got page 1's data
         while page <= result['metadata']['totalPages']:
-            url = 'https://' + self.cloudurl + api + '?page=%s' % page
+            url = 'https://' + self.cloudurl + uri + '?page=%s' % page
             next_page = self._request(url)
             for i in next_page['content']:
                 result['content'].append(i)
@@ -441,6 +446,15 @@ class Session(object):
             return result
         return result
 
+    def get_resource_types(self):
+        """
+        :return: 
+        
+        Using to try to figure out the resource types available to see if there is more information about them.
+        
+        """
+        url = 'https://' + self.cloudurl + '/catalog-service/api/provider/resourceTypes/'
+        return self._request(url)
 
     def get_consumer_resource_operations(self):
         """
@@ -449,7 +463,7 @@ class Session(object):
         
         :return: 
         """
-
+        # LOL what's this used for compared to actions?
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resourceOperations/'
         return self._request(url)
 
@@ -460,15 +474,31 @@ class Session(object):
     def get_blueprint_by_id(self, id):
         url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'  + id
         return self._request(url)
+
+    def get_blueprints(self):
+        """
+        :return: 
         
+        Used to get all blueprints. 
+        
+        """
+        # TODO update get_blueprint_by_name() method to consume this method instead?
+
+        url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'
+        return self._request(url)
+
     def get_blueprint_by_name(self, name):
         """
+        :param name: A string containing the name of the blueprint you're searching for
+        :return: 
+        
         Dumps all the blueprints then searches for the correct name. Update this to search each page before continuing later.
+         
         """
         api_get_all_bps = '/composition-service/api/blueprintdocuments/'
-        result = self.paginated_return(api_get_all_bps)
+        result = self._paginated_return(api_get_all_bps)
         
-        
+
         for blueprint in result['content']:
             if blueprint['name'] == name:
                 url_bp_id = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'  + blueprint['id']
@@ -488,6 +518,10 @@ class Session(object):
         
     def update_blueprint(self, bp_json, bp_id):
         """
+        :param bp_json:
+        :param bp_id:
+        :return: 
+        
         Creates/updates a bluperint based on a JSON doc. Best to use one of thet two "get blueprint" functions to dump a properly formatted JSON doc and either manually or programmatically update
         the doc based on what you need to change. The following example would update the source VM for all the VMs using a clone workflow.
         
