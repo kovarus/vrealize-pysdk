@@ -431,9 +431,21 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + id + '/form'
         return self._request(url)
 
-    # TODO add a pagination function since I'll need it more frequently.
-
     def get_consumer_resource_actions(self):
+        """
+        :return: 
+        
+        Used to retrieve all of the day 2 actions available for a given resource. For example: virtual machines
+        can be powered on and off using this. This also returns any custom day 2 actions that may be defined.
+        
+        A request template can be fetched here: 
+        GET /api/consumer/resources/{resourceId}/actions/{resourceActionId}/forms/request
+        
+        And POST'd to the same URL
+        
+        """
+        # TODO build a harness to request day 2 actions. Note this may be better served in a separate class
+
         url = 'https://' + self.cloudurl + '/catalog-service/api/provider/resourceActions'
         result = self._request(url)
 
