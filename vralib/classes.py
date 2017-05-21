@@ -62,6 +62,7 @@ class Session(object):
         When creating instances of this class you should invoke the Session.login() @classmethod. 
         If you invoke Session.__init__() directly you'll need to know what your bearer token is ahead of time.  
         
+        
         """
         self.username = username
         self.cloudurl = cloudurl
@@ -558,7 +559,6 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/' + bp_id
         return self._request(url, request_method='PUT', payload=bp_json)
 
-
 class CatalogItem(object):
     pass
 
@@ -569,8 +569,8 @@ class Deployment(object):
     
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, session):
+        self.session = session
 
     @classmethod
     def from_id(cls, session, id=None):
@@ -608,4 +608,47 @@ class Deployment(object):
         #     "description": "Change the lease for a machine. Leave empty for indefinite."
         # }
         pass
+
+    def resource_actions(self, extended=False):
+        """
+        :return: 
+
+        Used to retrieve all of the day 2 actions available for a given resource. For example: virtual machines
+        can be powered on and off using this. This also returns any custom day 2 actions that may be defined.
+
+        A request template can be fetched here: 
+        GET /api/consumer/resources/{resourceId}/actions/{resourceActionId}/forms/request
+
+        And POST'd to the same URL
+
+        """
+        # TODO build a harness to request day 2 actions. Note this may be better served in a separate class
+
+        url = 'https://' + self.session.cloudurl + '/catalog-service/api/provider/resourceActions'
+        result = self.session._request(url)
+
+        if extended:
+            if result['metadata']['totalPages'] != 1:
+                page = 2  # starting on 2 since we've already got page 1's data
+                while page <= result['metadata']['totalPages']:
+                    url = 'https://' + self.session.cloudurl + '/catalog-service/api/provider/resourceActions?page=%s' % page
+                    next_page = self.session._request(url)
+                    for i in next_page['content']:
+                        result['content'].append(i)
+                    page += 1
+                return result
+            return result
+        else:
+            # TODO make this return just key, value and index or something.
+            if result['metadata']['totalPages'] != 1:
+                page = 2  # starting on 2 since we've already got page 1's data
+                while page <= result['metadata']['totalPages']:
+                    url = 'https://' + self.session.cloudurl + '/catalog-service/api/provider/resourceActions?page=%s' % page
+                    next_page = self.session._request(url)
+                    for i in next_page['content']:
+                        result['content'].append(i)
+                    page += 1
+                return result
+            return result
+
 

@@ -62,7 +62,7 @@ def main():
 
     # TODO add some logic to query for options here.
     # TODO should be noted that this only changes one custom property. Need to design some logic to extend this
-    request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = "role::linux_mysql_database"
+    # request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = "role::linux_mysql_database"
 
     build_vm = vra.request_item(catalogitem=args.catalogitem,
                                 payload=request_template)
@@ -81,6 +81,9 @@ def main():
             raise Exception('Failed inside of vRA! Dumping JSON output of request',
                             json.dumps(provisioned_state, indent=4))
         time.sleep(5)
+
+    print "#" * 80
+    print json.dumps(provisioned_state)
 
 if __name__ == '__main__':
     main()
