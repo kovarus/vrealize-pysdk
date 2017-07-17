@@ -48,7 +48,7 @@ def main():
     name = args.name
 
     if not username:
-        username = raw_input("vRA Username (user@domain):")
+        username = input("vRA Username (user@domain):")
 
     password = getpass.getpass("vRA Password:")
 
@@ -62,7 +62,7 @@ def main():
     for i in catalog:
         out.add_row((i['name'], i['id']))
 
-    print out
+    print(out)
 
 if __name__ == '__main__':
     main()

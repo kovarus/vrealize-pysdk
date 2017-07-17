@@ -10,7 +10,6 @@
 
 from . import classes
 from .classes import Session
-from .functions import *
 from .vraexceptions import InvalidToken
 
 

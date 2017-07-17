@@ -14,7 +14,7 @@ __author__ = 'Russell Pope'
 
 import json
 import requests
-import vraexceptions as vraexcept
+from vralib.vraexceptions import InvalidToken
 
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -120,12 +120,12 @@ class Session(object):
                 auth_header = 'Bearer ' + vratoken['id']
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
-                raise vraexcept.InvalidToken('No bearer token found in response. Response was:',
+                raise InvalidToken('No bearer token found in response. Response was:',
                                               json.dumps(vratoken))
 
         except requests.exceptions.ConnectionError as e:
-            print 'Unable to connect to server %s' % cloudurl
-            print 'Exception was ' + str(e)
+            print(f'Unable to connect to server {cloudurl}')
+            print(f'Exception was {e} ')
             exit()
 
         except requests.exceptions.HTTPError:
