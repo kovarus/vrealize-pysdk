@@ -36,8 +36,14 @@ def getargs():
                         required=False,
                         action='store',
                         help='The partial or full name of the catalog item you want the ID for')
+    parser.add_argument('--url',
+                        required=False,
+                        action='store_true',
+                        help='If this argument is set it will return catalog item names and URLs instead of IDs')
     args = parser.parse_args()
     return args
+
+
 
 def main():
 
@@ -56,13 +62,22 @@ def main():
 
     catalog = vra.get_catalogitem_byname(name)
 
-    out = PrettyTable(['Name', 'ID'])
-    out.align['Name'] = 'l'
-    out.padding_width = 1
-    for i in catalog:
-        out.add_row((i['name'], i['id']))
+    if args.url:
+        out = PrettyTable(['Name', 'URL'])
+        out.align['Name'] = 'l'
+        out.padding_width = 1
+        for i in catalog:
+            template_url = vra.get_request_template_url(i['id'])
+            out.add_row((i['name'], template_url))
+        print(out)
 
-    print(out)
+    else:
+        out = PrettyTable(['Name', 'ID'])
+        out.align['Name'] = 'l'
+        out.padding_width = 1
+        for i in catalog:
+            out.add_row((i['name'], i['id']))
+        print(out)
 
 if __name__ == '__main__':
     main()

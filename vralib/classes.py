@@ -285,6 +285,25 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
         return self._request(url)
 
+    def get_request_template_url(self, catalogitem):
+        """
+        Returns just the URL for the template
+
+        :param catalogitem:
+        :return:
+        """
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
+        return url
+
+    def get_request_url(self, catalogitem):
+        """
+        Returns the URL for making the request
+        :param catalogitem:
+        :return:
+        """
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests'
+        return url
+
     def request_item(self, catalogitem, payload=False):
         """
 
