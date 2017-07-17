@@ -8,7 +8,7 @@
 """
 # TODO implement logging
 # TODO docstrings are formatted backwards; refer to requests library docstrings
-
+# TODO consider using a generator for paginated returns
 
 __author__ = 'Russell Pope'
 
@@ -489,9 +489,9 @@ class Session(object):
     def get_storage_reservations(self):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
-		
+
     def get_blueprint_by_id(self, id):
-        url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/'  + id
+        url = 'https://' + self.cloudurl + '/composition-service/api/blueprintdocuments/' + id
         return self._request(url)
 
     def get_blueprints(self):
@@ -650,5 +650,4 @@ class Deployment(object):
                     page += 1
                 return result
             return result
-
 

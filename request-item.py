@@ -57,8 +57,18 @@ def main():
 
     request_template = vra.get_request_template(catalogitem=args.catalogitem)
 
-    request_template['description'] = args.description
-    request_template['reasons'] = args.reasons
+
+    # request_template['description'] = args.description
+    # request_template['reasons'] = args.reasons
+    #
+    # request_template['data']['inputServices'] = ["application-2b47b67a-7563-41df-bc9a-b01374210cad"]
+    # request_template['data']['defaultSectionId'] = "d69e3a00-6cd9-4832-b7ba-0498b17acda4"
+    # request_template['data']['inputSources'] = ["securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0"]
+    # request_template['data']['inputDestinations'] = ["securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0"]
+    # request_template['data']['ruleName'] = "vra-service-test001"
+
+    print(json.dumps(request_template, indent=4))
+    #
 
     # TODO add some logic to query for options here.
     # TODO should be noted that this only changes one custom property. Need to design some logic to extend this
@@ -66,10 +76,12 @@ def main():
 
     build_vm = vra.request_item(catalogitem=args.catalogitem,
                                 payload=request_template)
-
+    # #
+    # #
     request_id = build_vm['id']
     provisioned_state = vra.get_requests(id=request_id)
 
+    #
     while 'SUCCESSFUL' not in provisioned_state['state']:
         provisioned_state = vra.get_requests(id=request_id)
         print('Current provisioning state is:', provisioned_state['stateName'],
@@ -82,8 +94,8 @@ def main():
                             json.dumps(provisioned_state, indent=4))
         time.sleep(5)
 
-    print "#" * 80
-    print json.dumps(provisioned_state)
+    print("#" * 80)
+    print(json.dumps(provisioned_state, indent=4))
 
 if __name__ == '__main__':
     main()
