@@ -262,6 +262,17 @@ class Session(object):
 
         return result
 
+    def get_catalogitem_byid(self, catalog_id):
+        """
+
+        Returns a specific catalog item
+
+        :param catalog_id: A string containing the catalog ID you're looking for
+        :return: A dictionary containing the response from the request
+        """
+        url = f"https://{self.cloudurl}/catalog-service/api/consumer/entitledCatalogItems?$filter=id eq '{catalog_id}'"
+        return self._request(url)
+
     def get_request_template(self, catalogitem):
         """
 
