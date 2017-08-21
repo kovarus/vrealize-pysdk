@@ -264,8 +264,7 @@ class Session(object):
 
     def get_catalogitem_byid(self, catalog_id):
         """
-
-        Returns a specific catalog item
+        Returns a specific catalog item by ID
 
         :param catalog_id: A string containing the catalog ID you're looking for
         :return: A dictionary containing the response from the request
@@ -432,32 +431,24 @@ class Session(object):
 
         return result
 
-    def get_storage_reservations(self):
+    def get_reservations_info(self):
+        """
+
+        Gets all of the current reservations including allocation percentage and returns a dictionary.
+        :return: A Python dictionary including all of the reservation information
+        """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
 
+
+
+
+# TODO build blueprints
+# TODO scale out
+
+
+# TODO look into what it would take to configure a business group with endpoints, reservation, etc.
+#
+
 class CatalogItem(object):
     pass
-
-
-
-
-class Deployment(object):
-    """
-    Manage existing deployments
-
-    probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
-
-    http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
-
-
-
-    """
-    def __init__(self, id):
-        self.id = id
-
-    @classmethod
-    def get_fromid(cls, id):
-        # Grab a dict with the given deployment in there and use as input
-        deployment = None
-        return cls(deployment)

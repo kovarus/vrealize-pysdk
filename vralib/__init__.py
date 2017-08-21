@@ -8,8 +8,9 @@
 """
 
 
-from . import classes
+from . import classes, deployment
 from .classes import Session
+from .deployment import Deployment
 from .vraexceptions import InvalidToken
 
 
