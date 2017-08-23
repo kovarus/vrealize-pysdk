@@ -372,7 +372,7 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
         return self._request(url)
 
-    def get_requests(self, id):
+    def get_requests(self, request_id):
         """
         gets a list of all request unless an id is specified. In that case it will only return the request specified.
 
@@ -380,31 +380,31 @@ class Session(object):
         :return:
         """
 
-        if not id:
+        if not request_id:
             url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests'
             return self._request(url)
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + id
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id
         return self._request(url)
 
-    def get_requests_forms_details(self, id):
+    def get_requests_forms_details(self, resource_id):
         """
         gets some request details on an individual request. may exclude later.
 
         :return:
         """
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + id
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + resource_id
         return self._request(url)
 
-    def get_request_details(self, id):
+    def get_request_details(self, request_id):
         """
         Returns details about a given request. Currently looks identical to output from get_requests_forms_details() method.
 
         :param id:
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + id + '/resourceViews'
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id + '/resourceViews'
         return self._request(url)
 
     def get_consumer_resources(self):
@@ -431,6 +431,11 @@ class Session(object):
 
         return result
 
+    def get_consumer_resource(self, resource_id):
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + resource_id
+        result = self._request(url)
+        return result
+
     def get_reservations_info(self):
         """
 
@@ -440,8 +445,10 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
 
-
-
+    def get_resource_view(self, resource_id):
+        "https://knowhere.kpsc.io/catalog-service/api/consumer/resourceViews/8ab8a1d7-100c-412b-84e2-aee9aca9cb55?managedOnly=false&withExtendedData=true&withOperations=true"
+        url = f'https://{self.cloudurl}/catalog-service/api/consumer/resourceViews/{resource_id}?managedOnly=false&withExtenedData=true&withOperations=true'
+        return self._request(url)
 
 # TODO build blueprints
 # TODO scale out
