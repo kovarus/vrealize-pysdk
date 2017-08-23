@@ -19,13 +19,9 @@ class Deployment(object):
 
     http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
 
-
-
     """
 
-    # def __init__(self, session, resource_id, description, name, request_id, business_group_id, date_created, owners, tenant_id,
-    #              costs, costs_to_date, total_cost, lease=None):
-    def __init__(self, session, deployment, operations):
+    def __init__(self, session, deployment, operations, deployment_children):
         self.session = session
         self.resource_id = deployment["id"]
         self.description = deployment["description"]
@@ -44,12 +40,15 @@ class Deployment(object):
         self.lease = deployment["lease"]
         self.operations = operations
 
+        self.deployment_children = deployment_children
+
     @classmethod
     def fromid(cls, session, resource_id):
         # Grab a dict with the given deployment in there and use as input
         deployment = session.get_consumer_resource(resource_id=resource_id)
 
         operations = []
+        deployment_children = []
 
         for op in deployment["operations"]:
             base_url = f"https://{session.cloudurl}/catalog-service/api/consumer/resources/"
@@ -62,13 +61,19 @@ class Deployment(object):
 
             operations.append(operation)
 
+        if deployment["hasChildren"] == True:
+            children = Deployment._get_children(session, resource_id)
+            for child in children["content"]:
+                deployment_children.append(Deployment.fromid(session, child["resourceId"]))
 
-        # session.get_
+        return cls(session, deployment, operations, deployment_children)
 
-        return cls(session, deployment, operations)
-
-    def _get_children(self):
-        pass
+    @staticmethod
+    def _get_children(session, resource_id):
+        base_url = f"https://{session.cloudurl}/catalog-service/api/consumer/resourceViews"
+        arguments = f"?managedOnly=false&withExtendedData=true&withOperations=true&$filter=parentResource eq '{resource_id}'"
+        children = session._request(url=base_url+arguments)
+        return children
 
     def scale_out(self, new_value):
         """
@@ -77,7 +82,9 @@ class Deployment(object):
 
         :return:
         """
-
+        # TODO consider replacing this method with one method that does both based in input value (i.e. out or in)
+        # TODO look for a cleaner way to parse the template since there is a possibility of multiple children that might need scaling
+        # Maybe create an instance for each child?
 
         template = None
 
