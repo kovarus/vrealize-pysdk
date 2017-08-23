@@ -23,6 +23,7 @@ class Deployment(object):
 
     def __init__(self, session, deployment, operations, deployment_children):
         self.session = session
+        self.deployment_json = deployment
         self.resource_id = deployment["id"]
         self.description = deployment["description"]
         self.name = deployment["name"]
@@ -85,6 +86,8 @@ class Deployment(object):
         # TODO consider replacing this method with one method that does both based in input value (i.e. out or in)
         # TODO look for a cleaner way to parse the template since there is a possibility of multiple children that might need scaling
         # Maybe create an instance for each child?
+        # TODO need to re-write this since we can now have access to individual children
+        # TODO maybe make a generic day 2 operation with **kwargs to drive it?
 
         template = None
 
