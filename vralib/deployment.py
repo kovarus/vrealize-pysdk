@@ -25,6 +25,7 @@ class Deployment(object):
         self.session = session
         self.deployment_json = deployment
         self.resource_id = deployment["id"]
+        self.resource_type = deployment["resourceTypeRef"]
         self.description = deployment["description"]
         self.name = deployment["name"]
         self.request_id = deployment["requestId"]
@@ -42,6 +43,9 @@ class Deployment(object):
         self.operations = operations
 
         self.deployment_children = deployment_children
+
+        if "parentResourceRef" in deployment.keys():
+            self.parent_resource = deployment["parentResourceRef"]
 
     @classmethod
     def fromid(cls, session, resource_id):
