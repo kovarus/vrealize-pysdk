@@ -106,3 +106,24 @@ class Deployment(object):
             if o["name"] == "Scale Out":
                 scale_out = self.session._request(url=o["request_url"], request_method="POST", payload=template)
                 return scale_out
+
+    def get_operation_template(self, operation):
+        """
+
+        Used to collect a template for use in the execute_operation() method. The template should be modified before
+        sending to the execute_operation() method.
+
+        :param operation: A string that includes the name of an operation. Operations can be found stored in the
+        operations attribute
+
+        :return: A Python dictionary that may be modified and used in the execute_operation() method
+        """
+        for o in self.operations:
+            if o["name"] == operation:
+                return self.session._request(url=o["template_url"])
+
+    def execute_operation(self, operation, payload):
+        for o in self.operations:
+            if o["name"] == operation:
+                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
+
