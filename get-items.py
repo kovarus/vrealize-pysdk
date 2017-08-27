@@ -67,7 +67,7 @@ def main():
         out.add_row((i['name'], i['id']))
         # print i['id']
         # print i['parentResourceRef']
-    print out
+    print(out)
 
 if __name__ == '__main__':
     main()

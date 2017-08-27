@@ -14,7 +14,7 @@ __author__ = 'Russell Pope'
 
 import json
 import requests
-import vraexceptions as vraexcept
+from vralib.vraexceptions import InvalidToken
 
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -120,12 +120,12 @@ class Session(object):
                 auth_header = 'Bearer ' + vratoken['id']
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
-                raise vraexcept.InvalidToken('No bearer token found in response. Response was:',
+                raise InvalidToken('No bearer token found in response. Response was:',
                                               json.dumps(vratoken))
 
         except requests.exceptions.ConnectionError as e:
-            print 'Unable to connect to server %s' % cloudurl
-            print 'Exception was ' + str(e)
+            print(f'Unable to connect to server {cloudurl}')
+            print(f'Exception was {e} ')
             exit()
 
         except requests.exceptions.HTTPError:
@@ -262,6 +262,16 @@ class Session(object):
 
         return result
 
+    def get_catalogitem_byid(self, catalog_id):
+        """
+        Returns a specific catalog item by ID
+
+        :param catalog_id: A string containing the catalog ID you're looking for
+        :return: A dictionary containing the response from the request
+        """
+        url = f"https://{self.cloudurl}/catalog-service/api/consumer/entitledCatalogItems?$filter=id eq '{catalog_id}'"
+        return self._request(url)
+
     def get_request_template(self, catalogitem):
         """
 
@@ -273,6 +283,25 @@ class Session(object):
         """
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
         return self._request(url)
+
+    def get_request_template_url(self, catalogitem):
+        """
+        Returns just the URL for the template
+
+        :param catalogitem:
+        :return:
+        """
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
+        return url
+
+    def get_request_url(self, catalogitem):
+        """
+        Returns the URL for making the request
+        :param catalogitem:
+        :return:
+        """
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests'
+        return url
 
     def request_item(self, catalogitem, payload=False):
         """
@@ -343,7 +372,7 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
         return self._request(url)
 
-    def get_requests(self, id):
+    def get_requests(self, request_id):
         """
         gets a list of all request unless an id is specified. In that case it will only return the request specified.
 
@@ -351,31 +380,31 @@ class Session(object):
         :return:
         """
 
-        if not id:
+        if not request_id:
             url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests'
             return self._request(url)
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + id
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id
         return self._request(url)
 
-    def get_requests_forms_details(self, id):
+    def get_requests_forms_details(self, resource_id):
         """
         gets some request details on an individual request. may exclude later.
 
         :return:
         """
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + id
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + resource_id
         return self._request(url)
 
-    def get_request_details(self, id):
+    def get_request_details(self, request_id):
         """
         Returns details about a given request. Currently looks identical to output from get_requests_forms_details() method.
 
         :param id:
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + id + '/resourceViews'
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id + '/resourceViews'
         return self._request(url)
 
     def get_consumer_resources(self):
@@ -402,32 +431,31 @@ class Session(object):
 
         return result
 
-    def get_storage_reservations(self):
+    def get_consumer_resource(self, resource_id):
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + resource_id
+        result = self._request(url)
+        return result
+
+    def get_reservations_info(self):
+        """
+
+        Gets all of the current reservations including allocation percentage and returns a dictionary.
+        :return: A Python dictionary including all of the reservation information
+        """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
 
+    def get_resource_view(self, resource_id):
+        "https://knowhere.kpsc.io/catalog-service/api/consumer/resourceViews/8ab8a1d7-100c-412b-84e2-aee9aca9cb55?managedOnly=false&withExtendedData=true&withOperations=true"
+        options = "?managedOnly=false&withExtenedData=true&withOperations=true"
+        url = f'https://{self.cloudurl}/catalog-service/api/consumer/resourceViews/{resource_id}{options}'
+        return self._request(url)
+
+# TODO build blueprints
+
+
+# TODO look into what it would take to configure a business group with endpoints, reservation, etc.
+#
+
 class CatalogItem(object):
     pass
-
-
-
-
-class Deployment(object):
-    """
-    Manage existing deployments
-
-    probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
-
-    http://stackoverflow.com/questions/26033726/parent-methods-which-return-child-class-instances
-
-
-
-    """
-    def __init__(self, id):
-        self.id = id
-
-    @classmethod
-    def get_fromid(cls, id):
-        # Grab a dict with the given deployment in there and use as input
-        deployment = None
-        return cls(deployment)
