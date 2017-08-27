@@ -447,11 +447,11 @@ class Session(object):
 
     def get_resource_view(self, resource_id):
         "https://knowhere.kpsc.io/catalog-service/api/consumer/resourceViews/8ab8a1d7-100c-412b-84e2-aee9aca9cb55?managedOnly=false&withExtendedData=true&withOperations=true"
-        url = f'https://{self.cloudurl}/catalog-service/api/consumer/resourceViews/{resource_id}?managedOnly=false&withExtenedData=true&withOperations=true'
+        options = "?managedOnly=false&withExtenedData=true&withOperations=true"
+        url = f'https://{self.cloudurl}/catalog-service/api/consumer/resourceViews/{resource_id}{options}'
         return self._request(url)
 
 # TODO build blueprints
-# TODO scale out
 
 
 # TODO look into what it would take to configure a business group with endpoints, reservation, etc.
