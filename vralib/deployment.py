@@ -165,3 +165,14 @@ class VirtualMachine(Deployment):
 
     def rollback_snapshot(self):
         pass
+
+
+class LoadBalancer(Deployment):
+    pass
+
+
+class Edge(Deployment):
+    pass
+
+class Vlan(Deployment):
+    pass
