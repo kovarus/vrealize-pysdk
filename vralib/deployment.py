@@ -128,6 +128,12 @@ class Deployment(object):
                 return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
 class VirtualMachine(Deployment):
-    pass
+
+   def test(self):
+       pass
+
+
+
+
 
 
