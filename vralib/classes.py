@@ -211,7 +211,7 @@ class Session(object):
         return self._request(url)
 
     def delete_businessgroup_fromid(self, group_id):
-            """
+        """
         
         Deletes a business group from vRealize Automation if all other objects have been removed
         :return: Will return a b'' and success
