@@ -130,6 +130,7 @@ class Deployment(object):
 class VirtualMachine(Deployment):
 
    def test(self):
+       #test
        pass
 
 
