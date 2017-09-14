@@ -472,7 +472,7 @@ class Session(object):
         :return: An empty response of b'' 
         """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations'
-        template = 'https://' + self.cloudurl + '/reservation-service/api/reservations/' + existing_reservation_id
+        template = self._request('https://' + self.cloudurl + '/reservation-service/api/reservations/' + existing_reservation_id)
         template['id'] = None
         template['name'] = name
         return self._request(url, request_method='POST', payload=template)
