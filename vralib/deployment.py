@@ -127,3 +127,7 @@ class Deployment(object):
             if o["name"] == operation:
                 return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
+class VirtualMachine(Deployment):
+    pass
+
+
