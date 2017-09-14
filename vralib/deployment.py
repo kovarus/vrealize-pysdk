@@ -69,7 +69,10 @@ class Deployment(object):
         if deployment["hasChildren"] == True:
             children = Deployment._get_children(session, resource_id)
             for child in children["content"]:
-                deployment_children.append(Deployment.fromid(session, child["resourceId"]))
+                if child["resourceType"] == "Infrastructure.Virtual":
+                    deployment_children.append(VirtualMachine.fromid(session, child["resourceId"]))
+                else:
+                    deployment_children.append(Deployment.fromid(session, child["resourceId"]))
 
         return cls(session, deployment, operations, deployment_children)
 
