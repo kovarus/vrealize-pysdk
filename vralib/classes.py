@@ -176,6 +176,17 @@ class Session(object):
 
             return json.loads(r.content)
 
+        elif request_method == "DELETE":
+            r = requests.request(request_method,
+                                url=url,
+                                headers=self.headers,
+                                verify=self.ssl_verify)
+
+            if not r.ok:
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+
+            return r.content
+
     def get_business_groups(self):
         """
 
@@ -187,6 +198,27 @@ class Session(object):
 
         url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants'
         return self._request(url)
+
+    def get_businessgroup_fromid(self, group_id):
+        """
+
+        Lists a business group using the group id
+        :return: A python dictionary of the selected business group details 
+
+        """
+        
+        url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants/' + group_id
+        return self._request(url)
+
+    def delete_businessgroup_fromid(self, group_id):
+            """
+        
+        Deletes a business group from vRealize Automation if all other objects have been removed
+        :return: Will return a b'' and success
+        """
+
+        url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants/' + group_id
+        return self._request(url,request_method='DELETE') 
 
     def get_entitled_catalog_items(self):
         """
@@ -472,7 +504,7 @@ class Session(object):
         :return: An empty response of b'' 
         """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations'
-        template = 'https://' + self.cloudurl + '/reservation-service/api/reservations/' + existing_reservation_id
+        template = self._request('https://' + self.cloudurl + '/reservation-service/api/reservations/' + existing_reservation_id)
         template['id'] = None
         template['name'] = name
         return self._request(url, request_method='POST', payload=template)
