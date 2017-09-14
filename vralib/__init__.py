@@ -8,9 +8,10 @@
 """
 
 
-from . import classes, deployment
+from . import classes, deployment, reservation
 from .classes import Session
 from .deployment import Deployment
+from .reservation import Reservation
 from .vraexceptions import InvalidToken
 
 
