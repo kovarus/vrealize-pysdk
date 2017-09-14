@@ -445,6 +445,38 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
         return self._request(url)
 
+    def get_reservations(self):
+        """
+
+        Gets all of the current reservations and returns a dictionary.
+        :return: A Python dictionary including all of the reservations
+        """
+        url = 'https://' + self.cloudurl + '/reservation-service/api/reservations'
+        return self._request(url)
+
+    def get_reservation(self, reservation_id):
+        """
+
+        Gets a reservation details and returns a dictionary.
+        :return: A Python dictionary including all of the reservation information for a specific reservation
+        """
+        url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/' + reservation_id
+        return self._request(url)
+
+    def new_reservation_from_existing(self, name, existing_reservation_id):
+        #TODO update to return JSON for newly created reservation on completion 
+        #TODO update to take input of desired assigned business group ID as well; currently assigns to whatever is in template; can't be modified
+        """
+
+        Creates a new reservation using an existing reservation as a template.
+        :return: An empty response of b'' 
+        """
+        url = 'https://' + self.cloudurl + '/reservation-service/api/reservations'
+        template = 'https://' + self.cloudurl + '/reservation-service/api/reservations/' + existing_reservation_id
+        template['id'] = None
+        template['name'] = name
+        return self._request(url, request_method='POST', payload=template)
+
     def get_resource_view(self, resource_id):
         "https://knowhere.kpsc.io/catalog-service/api/consumer/resourceViews/8ab8a1d7-100c-412b-84e2-aee9aca9cb55?managedOnly=false&withExtendedData=true&withOperations=true"
         options = "?managedOnly=false&withExtenedData=true&withOperations=true"
