@@ -127,14 +127,41 @@ class Deployment(object):
             if o["name"] == operation:
                 return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
+
 class VirtualMachine(Deployment):
 
-   def test(self):
-       #test
-       pass
+    def destroy(self):
+        pass
 
+    def power_cycle(self):
+        pass
 
+    def power_on(self):
+        pass
 
+    def power_off(self):
+        pass
 
+    def reboot(self):
+        for o in self.operations:
+            if o["name"] == 'Reboot':
+                payload = self.session._request(url=o["template_url"])
+                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
+    def reconfigure(self):
+        pass
 
+    def shutdown(self):
+        pass
+
+    def suspend(self):
+        pass
+
+    def snapshot(self):
+        pass
+
+    def get_snapshots(self):
+        pass
+
+    def rollback_snapshot(self):
+        pass
