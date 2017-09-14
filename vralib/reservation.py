@@ -28,7 +28,7 @@ class Reservation(object):
         self.enabled = reservation['enabled']
 
     @classmethod
-    def fromresid(cls, session, reservation_id):
+    def fromid(cls, session, reservation_id):
         reservation = session.get_reservation(reservation_id=reservation_id)
 
         return cls(session, reservation)
