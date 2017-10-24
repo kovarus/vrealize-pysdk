@@ -49,9 +49,15 @@ class Deployment(object):
 
     @classmethod
     def fromid(cls, session, resource_id):
+        """
+
+        :param session:
+        :param resource_id:
+        :return:
+        """
         # Grab a dict with the given deployment in there and use as input
         deployment = session.get_consumer_resource(resource_id=resource_id)
-
+        # Store operations and deployment children in a list
         operations = []
         deployment_children = []
 
@@ -66,11 +72,18 @@ class Deployment(object):
 
             operations.append(operation)
 
+        # See if we have children and if we do create an instance of the appropriate class
         if deployment["hasChildren"] == True:
             children = Deployment._get_children(session, resource_id)
             for child in children["content"]:
                 if child["resourceType"] == "Infrastructure.Virtual":
                     deployment_children.append(VirtualMachine.fromid(session, child["resourceId"]))
+                if child["resourceType"] == "Infrastructure.Network.LoadBalancer.NSX":
+                    deployment_children.append(LoadBalancer.fromid(session, child["resourceId"]))
+                if child["resourceType"] == "Infrastructure.Network.Gateway.NSX.Edge":
+                    deployment_children.append(Edge.fromid(session, child["resourceId"]))
+                if child["resourceType"] == "Infrastructure.Network.Network.Existing":
+                    deployment_children.append(Network.fromid(session, child["resourceId"]))
                 else:
                     deployment_children.append(Deployment.fromid(session, child["resourceId"]))
 
@@ -132,6 +145,11 @@ class Deployment(object):
 
 
 class VirtualMachine(Deployment):
+    """
+    This class is used to manage VirtualMachine specific deployments. It provides a handful of helpful methods
+    specific to virtual machines.
+
+    """
 
     def destroy(self):
         pass
@@ -140,16 +158,25 @@ class VirtualMachine(Deployment):
         pass
 
     def power_on(self):
-        pass
+        for o in self.operations:
+            if o["name"] == 'Power On':
+                payload = self.session._request(url=o["template_url"])
+                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
     def power_off(self):
-        pass
+        for o in self.operations:
+            if o["name"] == 'Power Off':
+                payload = self.session._request(url=o["template_url"])
+                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
     def reboot(self):
         for o in self.operations:
             if o["name"] == 'Reboot':
                 payload = self.session._request(url=o["template_url"])
                 return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
+
+    def get_reconfigure_template(self):
+        pass
 
     def reconfigure(self):
         pass
@@ -171,11 +198,11 @@ class VirtualMachine(Deployment):
 
 
 class LoadBalancer(Deployment):
+    """Waiting to implement this due to bug in the vRA 7.3 API with retrieving template"""
     pass
-
 
 class Edge(Deployment):
     pass
 
-class Vlan(Deployment):
+class Network(Deployment):
     pass

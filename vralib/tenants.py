@@ -1,12 +1,11 @@
 import json
 import requests
+from .classes import Session
 
-class Tenant(object):
+class Tenant(Session):
     pass
 
 class BusinessGroup(Tenant):
-    def __init__(self):
-        pass
 
     @staticmethod
     def get_businessgroups(session, tenant=None):

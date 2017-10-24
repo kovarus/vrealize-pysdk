@@ -172,7 +172,7 @@ class Session(object):
                                  verify=self.ssl_verify)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status and content:', r.status_code, r.content)
 
             return json.loads(r.content)
 
