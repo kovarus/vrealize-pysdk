@@ -92,3 +92,6 @@ ENV/
 
 .idea/workspace.xml
 sandbox.py
+
+# cloud client
+cc/

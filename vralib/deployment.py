@@ -84,7 +84,7 @@ class Deployment(object):
                     deployment_children.append(Edge.fromid(session, child["resourceId"]))
                 if child["resourceType"] == "Infrastructure.Network.Network.Existing":
                     deployment_children.append(Network.fromid(session, child["resourceId"]))
-                else:
+                if child["resourceType"] == "composition.resource.type.deployment":
                     deployment_children.append(Deployment.fromid(session, child["resourceId"]))
 
         return cls(session, deployment, operations, deployment_children)
