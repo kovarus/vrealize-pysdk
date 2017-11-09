@@ -145,6 +145,20 @@ class Deployment(object):
 
 
     def destroy(self, force=False):
+        """Used to destroy the deployment. The deployment may be force destroyed if it failed previously.
+
+        Basic Usage::
+            #>>> deployment = vralib.Deployment.fromid(session=vra, resource_id="28e735b6-04d3-46d1-bf4e-ca7210b2cba4")
+            #>>> deployment.destroy()
+
+        Note that if force is set to True it will throw an error 400
+
+        :param force: Boolean, if set to True it will attempt to force the destroy.
+                      This should only be invoked if a regular destroy fails
+        :return:
+        """
+        #LOL for some reason forcing a destroy will make the server return an error 400 telling you
+        #LOL     that you can only force out a previously failed destroy action
         template = self.get_operation_template(operation="Destroy")
         if force:
             template["data"]["ForceDestroy"] = "True"
@@ -152,6 +166,14 @@ class Deployment(object):
         return self.execute_operation(operation="Destroy", payload=template)
 
     def expire(self):
+        """Expires the deployment
+
+        Basic Usage::
+            #>>> deployment = vralib.Deployment.fromid(session=vra, resource_id="28e735b6-04d3-46d1-bf4e-ca7210b2cba4")
+            #>>> deployment.expire()
+
+        :return: A byte string of the response from the webserver. On success it will be empty.
+        """
         template = self.get_operation_template(operation="Expire")
         return self.execute_operation(operation="Expire", payload=template)
 
@@ -160,11 +182,11 @@ class Deployment(object):
 
         Basic Usage::
 
-            # >>> deployment = vralib.Deployment.fromid(session=vra, resource_id="28e735b6-04d3-46d1-bf4e-ca7210b2cba4")
-            # >>> deployment.change_lease(expiration_date="2018-12-15T19:31:54.672Z")
+            #>>> deployment = vralib.Deployment.fromid(session=vra, resource_id="28e735b6-04d3-46d1-bf4e-ca7210b2cba4")
+            #>>> deployment.change_lease(expiration_date="2018-12-15T19:31:54.672Z")
 
         :param expiration_date: String formatted date in ISO 8601 format. For example: "2018-12-15T19:31:54.672Z"
-        :return: A byte string of the response from the webserver. On success it will be empty
+        :return: A byte string of the response from the webserver. On success it will be empty.
         """
 
         template = self.get_operation_template(operation="Change Lease")
@@ -180,9 +202,6 @@ class VirtualMachine(Deployment):
     specific to virtual machines.
 
     """
-
-    def destroy(self):
-        pass
 
     def power_cycle(self):
         pass

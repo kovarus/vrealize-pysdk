@@ -133,7 +133,6 @@ class Session(object):
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
         """
-        
         Generic requestor method for all of the HTTP methods. This gets invoked by pretty much everything in the API.
         You can also use it to do anything not yet implemented in the API. For example:
         (assuming an instance of this class called vra)
