@@ -22,6 +22,13 @@ class Deployment(object):
     """
 
     def __init__(self, session, deployment, operations, deployment_children):
+        """
+
+        :param session:
+        :param deployment:
+        :param operations:
+        :param deployment_children:
+        """
         self.session = session
         self.deployment_json = deployment
         self.resource_id = deployment["id"]
@@ -49,7 +56,8 @@ class Deployment(object):
 
     @classmethod
     def fromid(cls, session, resource_id):
-        """
+        """Creates an instance based on the GUID in vRA. If the deployment has children it will attempt to resolve them
+        and store them in a list as deployment_children.
 
         :param session:
         :param resource_id:
@@ -97,9 +105,7 @@ class Deployment(object):
         return children
 
     def scale_out(self, new_value):
-        """
-
-        Currently this only works with a single tier app. Need to sort out how to make it better
+        """Currently this only works with a single tier app. Need to sort out how to make it better
 
         :return:
         """
@@ -124,9 +130,7 @@ class Deployment(object):
                 return scale_out
 
     def get_operation_template(self, operation):
-        """
-
-        Used to collect a template for use in the execute_operation() method. The template should be modified before
+        """Used to collect a template for use in the execute_operation() method. The template should be modified before
         sending to the execute_operation() method.
 
         :param operation: A string that includes the name of an operation. Operations can be found stored in the
@@ -188,7 +192,7 @@ class Deployment(object):
         :param expiration_date: String formatted date in ISO 8601 format. For example: "2018-12-15T19:31:54.672Z"
         :return: A byte string of the response from the webserver. On success it will be empty.
         """
-
+        #LOL date needs to include an ISO 8601 timestamp down to the millisecond. Should probably just be ok with date.
         template = self.get_operation_template(operation="Change Lease")
         template["data"]["provider-ExpirationDate"] = expiration_date
 
@@ -204,25 +208,24 @@ class VirtualMachine(Deployment):
     """
 
     def power_cycle(self):
-        pass
+        template = self.get_operation_template(operation="Power Cycle")
+        return self.execute_operation(operation="Power Cycle", payload=template)
 
     def power_on(self):
-        for o in self.operations:
-            if o["name"] == 'Power On':
-                payload = self.session._request(url=o["template_url"])
-                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
+        template = self.get_operation_template(operation="Power On")
+        return self.execute_operation(operation="Power On", payload=template)
 
     def power_off(self):
-        for o in self.operations:
-            if o["name"] == 'Power Off':
-                payload = self.session._request(url=o["template_url"])
-                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
+        template = self.get_operation_template(operation="Power Off")
+        return self.execute_operation(operation="Power Off", payload=template)
 
     def reboot(self):
-        for o in self.operations:
-            if o["name"] == 'Reboot':
-                payload = self.session._request(url=o["template_url"])
-                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
+        template = self.get_operation_template(operation="Reboot")
+        return self.execute_operation(operation="Reboot", payload=template)
+
+    def install_tools(self):
+        template = self.get_operation_template(operation="Install Tools")
+        return self.execute_operation(operation="Install Tools", payload=template)
 
     def get_reconfigure_template(self):
         pass
