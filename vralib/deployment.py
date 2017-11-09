@@ -227,16 +227,18 @@ class VirtualMachine(Deployment):
         template = self.get_operation_template(operation="Install Tools")
         return self.execute_operation(operation="Install Tools", payload=template)
 
+    def shutdown(self):
+        template = self.get_operation_template(operation="Shutdown")
+        return self.execute_operation(operation="Shutdown", payload=template)
+
+    def suspend(self):
+        template = self.get_operation_template(operation="Suspend")
+        return self.execute_operation(operation="Suspend", payload=template)
+
     def get_reconfigure_template(self):
         pass
 
     def reconfigure(self):
-        pass
-
-    def shutdown(self):
-        pass
-
-    def suspend(self):
         pass
 
     def snapshot(self):
