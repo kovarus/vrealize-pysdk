@@ -144,6 +144,36 @@ class Deployment(object):
                 return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
 
 
+    def destroy(self, force=False):
+        template = self.get_operation_template(operation="Destroy")
+        if force:
+            template["data"]["ForceDestroy"] = "True"
+
+        return self.execute_operation(operation="Destroy", payload=template)
+
+    def expire(self):
+        template = self.get_operation_template(operation="Expire")
+        return self.execute_operation(operation="Expire", payload=template)
+
+    def change_lease(self, expiration_date):
+        """Used to change the lease of the deployment.
+
+        Basic Usage::
+
+            # >>> deployment = vralib.Deployment.fromid(session=vra, resource_id="28e735b6-04d3-46d1-bf4e-ca7210b2cba4")
+            # >>> deployment.change_lease(expiration_date="2018-12-15T19:31:54.672Z")
+
+        :param expiration_date: String formatted date in ISO 8601 format. For example: "2018-12-15T19:31:54.672Z"
+        :return: A byte string of the response from the webserver. On success it will be empty
+        """
+
+        template = self.get_operation_template(operation="Change Lease")
+        template["data"]["provider-ExpirationDate"] = expiration_date
+
+        return self.execute_operation(operation="Change Lease", payload=template)
+
+
+
 class VirtualMachine(Deployment):
     """
     This class is used to manage VirtualMachine specific deployments. It provides a handful of helpful methods

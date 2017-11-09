@@ -161,7 +161,7 @@ class Session(object):
                                  data=payload)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code, r.content)
 
             return r.content
 
