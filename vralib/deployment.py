@@ -143,6 +143,7 @@ class Deployment(object):
                 return self.session._request(url=o["template_url"])
 
     def execute_operation(self, operation, payload):
+        #TODO See if there's a better way to find the operation to improve performance
         for o in self.operations:
             if o["name"] == operation:
                 return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
@@ -206,7 +207,7 @@ class VirtualMachine(Deployment):
     specific to virtual machines.
 
     """
-
+    #TODO maybe see if I could do something more efficient with **kwargs
     def power_cycle(self):
         template = self.get_operation_template(operation="Power Cycle")
         return self.execute_operation(operation="Power Cycle", payload=template)
