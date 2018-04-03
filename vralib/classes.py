@@ -194,7 +194,7 @@ class Session(object):
         :return: python dictionary with the JSON response contents.
 
         """
-
+        # test
         url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants'
         return self._request(url)
 
