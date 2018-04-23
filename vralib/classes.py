@@ -121,7 +121,7 @@ class Session(object):
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
                 raise InvalidToken('No bearer token found in response. Response was:',
-                                              json.dumps(vratoken))
+                                   json.dumps(vratoken))
 
         except requests.exceptions.ConnectionError as e:
             print(f'Unable to connect to server {cloudurl}')
