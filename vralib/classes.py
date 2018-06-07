@@ -121,7 +121,7 @@ class Session(object):
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
                 raise InvalidToken('No bearer token found in response. Response was:',
-                                              json.dumps(vratoken))
+                                   json.dumps(vratoken))
 
         except requests.exceptions.ConnectionError as e:
             print(f'Unable to connect to server {cloudurl}')
@@ -133,7 +133,6 @@ class Session(object):
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
         """
-        
         Generic requestor method for all of the HTTP methods. This gets invoked by pretty much everything in the API.
         You can also use it to do anything not yet implemented in the API. For example:
         (assuming an instance of this class called vra)
@@ -161,7 +160,7 @@ class Session(object):
                                  data=payload)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code, r.content)
 
             return r.content
 
@@ -172,7 +171,7 @@ class Session(object):
                                  verify=self.ssl_verify)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError('HTTP error. Status and content:', r.status_code, r.content)
 
             return json.loads(r.content)
 
@@ -195,7 +194,7 @@ class Session(object):
         :return: python dictionary with the JSON response contents.
 
         """
-
+        # test
         url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants'
         return self._request(url)
 

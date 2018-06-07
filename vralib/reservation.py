@@ -30,5 +30,4 @@ class Reservation(object):
     @classmethod
     def fromid(cls, session, reservation_id):
         reservation = session.get_reservation(reservation_id=reservation_id)
-
         return cls(session, reservation)
