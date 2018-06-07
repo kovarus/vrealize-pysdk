@@ -86,7 +86,7 @@ class Deployment(object):
             for child in children["content"]:
                 if child["resourceType"] == "Infrastructure.Virtual":
                     deployment_children.append(VirtualMachine.fromid(session, child["resourceId"]))
-                if child["resourceType"] == "Infrastructure.Network.LoadBalancer.NSX":
+                if child["resourceTypet"] == "Infrastructure.Network.LoadBalancer.NSX":
                     deployment_children.append(LoadBalancer.fromid(session, child["resourceId"]))
                 if child["resourceType"] == "Infrastructure.Network.Gateway.NSX.Edge":
                     deployment_children.append(Edge.fromid(session, child["resourceId"]))
@@ -257,6 +257,7 @@ class LoadBalancer(Deployment):
     pass
 
 class Edge(Deployment):
+    """"""
     pass
 
 class Network(Deployment):
