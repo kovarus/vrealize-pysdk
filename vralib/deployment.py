@@ -10,8 +10,7 @@
 __author__ = 'Russell Pope'
 
 class Deployment(object):
-    """
-    Manage existing deployments
+    """Manage existing deployments
 
     probably want to create instances of child classes with individual virtual machines/items that are a part of this deployment
 
