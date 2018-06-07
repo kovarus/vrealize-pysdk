@@ -3,7 +3,6 @@
     Python module for interfacing with the vRealize API
     Primarily used for reporting initially.
 
-    This thing is kind of a mess so tread carefully while I piece it back together.
 
 """
 # TODO implement logging
